@@ -13,4 +13,5 @@ if not os.path.exists('dist'):
 
 shutil.copyfile('./src/main.py', './dist/pinit')
 os.chmod('./dist/pinit', stat.S_IRWXU | stat.S_IXOTH)
+shutil.rmtree('./dist/templates')
 shutil.copytree('./src/templates', './dist/templates')

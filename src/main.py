@@ -119,7 +119,7 @@ def main():
         for gif in args.gitignore:
             composed += 'ignore: ' + gif + '\n'
 
-    os.system('git init')
+    os.system('git init --quiet')
 
     if args.gitRemote != '':
         os.system('git remote add origin {}'.format(args.gitRemote))
