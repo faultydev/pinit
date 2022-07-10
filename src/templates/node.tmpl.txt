@@ -1,0 +1,4 @@
+dir: tests
+file: src/index.js
+file: tests/test.js
+ignore: node_modules

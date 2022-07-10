@@ -1,0 +1,6 @@
+dir: docs
+dir: src
+file: README.md
+file: .gitignore
+ignore: private
+ignore: .env
