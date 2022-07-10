@@ -5,6 +5,7 @@ import os
 from posixpath import basename
 
 pyspath = os.path.dirname(os.path.realpath(__file__))
+templates_path = os.environ.get('TEMPLATE_DIR') or pyspath + '/templates/'
 
 
 def __touch(fname, times=None):
@@ -25,8 +26,7 @@ def _getTemplates():
 
 
 def _fetchTemplate(template_name):
-    def tmplpath(tmpl_name): return pyspath + \
-        '/templates/' + tmpl_name + '.tmpl.txt'
+    def tmplpath(tmpl_name): return templates_path + tmpl_name + '.tmpl.txt'
     if not os.path.exists(tmplpath(template_name)):
         raise Exception('Template not found.')
     fstr = ""
@@ -69,11 +69,18 @@ def main():
     )
 
     argp.add_argument(
+        '-v', '--version',
+        action='store_true',
+        default=False,
+        help="Displays the version"
+    )
+
+    argp.add_argument(
         '-n', '--name',
-        help="the project name (default's to basename of cwd)",
-        dest='pname',
         type=str,
-        default=str(basename(os.getcwd()))
+        dest='pname',
+        default=str(basename(os.getcwd())),
+        help="the project name (default's to basename of cwd)"
     )
 
     argp.add_argument(
@@ -104,6 +111,10 @@ def main():
 
     args = argp.parse_args()
     origindir = os.getcwd()
+
+    if args.version:
+        print('You\'re using pinit @ commit: ' + "<VERSION>")
+        return
 
     if args.pname != basename(origindir):
         os.mkdir(args.pname)
