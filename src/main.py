@@ -1,6 +1,6 @@
 #!/bin/python3
 
-from argparse import ArgumentParser
+import argparse
 import os
 from posixpath import basename
 
@@ -16,7 +16,7 @@ def __touch(fname, times=None):
         fhandle.close()
 
 
-def _getTemplates():
+def _get_templates():
     arr = []
     for root, path, files in os.walk(pyspath + '/templates'):
         for f in files:
@@ -25,7 +25,7 @@ def _getTemplates():
     return arr
 
 
-def _fetchTemplate(template_name):
+def _fetch_template(template_name):
     def tmplpath(tmpl_name): return templates_path + tmpl_name + '.tmpl.txt'
     if not os.path.exists(tmplpath(template_name)):
         raise Exception('Template not found.')
@@ -35,19 +35,21 @@ def _fetchTemplate(template_name):
     return fstr
 
 
-def composeTemplate(templates=['_']):
-    tmplstr = ""
+def compose_template(templates=None):
+    if templates is None:
+        templates = ['_']
+    tmpl_str = ""
     for tmpl in templates:
-        tmplstr += _fetchTemplate(tmpl)
-        tmplstr += '\n'
-    return tmplstr
+        tmpl_str += _fetch_template(tmpl)
+        tmpl_str += '\n'
+    return tmpl_str
 
 
-def carveTemplate(tmplStr: str):
+def carve_template(tmpl_str: str):
     """
         MAKE SURE THIS IS RAN INSIDE THE PROJECT DIR
     """
-    lines = tmplStr.splitlines()
+    lines = tmpl_str.splitlines()
     for l in lines:
         if l.startswith('dir: '):
             os.mkdir(l.split('dir: ')[1])
@@ -62,7 +64,7 @@ def carveTemplate(tmplStr: str):
 
 
 def main():
-    argp = ArgumentParser(
+    argp = argparse.ArgumentParser(
         description="Initialize and manage projects",
         prog="pinit",
         # epilog="pinit is MIT licensed."
@@ -89,7 +91,7 @@ def main():
         dest='type',
         default='_',
         help="choose a type of project ({})".format(
-            ", ".join(_getTemplates())
+            ", ".join(_get_templates())
         )
     )
 
@@ -110,21 +112,21 @@ def main():
     )
 
     args = argp.parse_args()
-    origindir = os.getcwd()
+    origin_dir = os.getcwd()
 
     if args.version:
         print('You\'re using pinit @ commit: ' + "<VERSION>")
         return
 
-    if args.pname != basename(origindir):
+    if args.pname != basename(origin_dir):
         os.mkdir(args.pname)
         os.chdir(args.pname)
 
     if args.type:
         if args.type == '_':
-            composed = composeTemplate()
+            composed = compose_template()
         else:
-            composed = composeTemplate(['_', args.type])
+            composed = compose_template(['_', args.type])
 
     if args.gitignore:
         for gif in args.gitignore:
@@ -135,7 +137,7 @@ def main():
     if args.gitRemote != '':
         os.system('git remote add origin {}'.format(args.gitRemote))
 
-    carveTemplate(composed)
+    carve_template(composed)
 
 
 if __name__ == "__main__":
